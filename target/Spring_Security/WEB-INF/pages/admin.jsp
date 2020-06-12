@@ -42,17 +42,19 @@
                 ${i.password}
         </tr>
         <tr>
-            Role:
-                ${i.role}
+            <c:forEach var="w" items="${i.roleSet}">
+                Role:
+                ${w.role}
+            </c:forEach>
         </tr>
         <tr>
-            <form action="/delete" method="post">
+            <form action="/admin/delete" method="post">
                 <input name="idDelete" type="hidden" value="${i.id}">
                 <button type="submit">Delete</button>
             </form>
         </tr>
         <tr>
-            <form action="/update" method="get">
+            <form action="/admin/update" method="get">
                 <input name="idUpdate" type="hidden" value="${i.id}">
                 <button type="submit">Update</button>
             </form>

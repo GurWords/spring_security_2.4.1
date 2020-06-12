@@ -12,14 +12,20 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/update" method="post">
+<form action="/admin/update" method="post">
     <input type="hidden" name="id" value="${user.id}">
     Name:
     <input name="name" value="${user.name}">
     Password:
     <input name="password" value="${user.password}">
-    Role:
-    <input name="role" value="${user.role}">
+    <c:if test="${roleList.size()==2}">
+        Roles:
+        <input name="role" value="${roleList.get(0).role},${roleList.get(1).role}">
+    </c:if>
+    <c:if test="${roleList.size()==1}">
+        Role:
+        <input name="role" value="${roleList.get(0).role}">
+    </c:if>
     Age:
     <input name="age" value="${user.age}">
     <input type="submit">

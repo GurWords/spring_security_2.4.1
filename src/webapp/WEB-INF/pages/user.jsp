@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: GEORGY
@@ -16,7 +17,7 @@
     <li>${user.name}</li>
     <li>${user.age}</li>
     <li>${user.password}</li>
-    <li>${user.role.role}</li>
+    <li>${role}</li>
 </ul>
 <form action="/logout" method="get">
     <input type="submit" value="Logout" />

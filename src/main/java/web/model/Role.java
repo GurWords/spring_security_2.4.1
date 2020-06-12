@@ -3,9 +3,8 @@ package web.model;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.Serializable;
+import java.util.*;
 
 @Entity
 public class Role implements GrantedAuthority {
@@ -14,12 +13,19 @@ public class Role implements GrantedAuthority {
     Long id;
     @Column(name = "role")
     String role;
-//    @ManyToMany( fetch = FetchType.LAZY, mappedBy = "roleList")
-//    private List<User> userList;
-    @OneToMany(mappedBy = "role",fetch = FetchType.EAGER)
-    private List<User> userList = new ArrayList<>();
+    @ManyToMany(mappedBy = "roleSet", fetch = FetchType.EAGER)
+    Set<User> userList = new HashSet<>();
 
-    public Role(){};
+    public Role() {
+    }
+
+    public void setUser(User user) {
+        userList.add(user);
+    }
+
+    public Role(String role_name) {
+        this.role = role_name;
+    }
 
     public Long getId() {
         return id;
@@ -37,13 +43,14 @@ public class Role implements GrantedAuthority {
         this.role = role;
     }
 
-    public List<User> getUserList() {
+    public Set<User> getUserList() {
         return userList;
     }
 
-    public void setUserList(List<User> userList) {
+    public void setUserList(Set<User> userList) {
         this.userList = userList;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -54,27 +61,9 @@ public class Role implements GrantedAuthority {
                 Objects.equals(userList, role1.userList);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(role, userList);
-    }
 
     @Override
     public String getAuthority() {
         return getRole();
-    }
-
-    public static class Builder{
-        private Role role;
-        public Builder(){
-            role = new Role();
-        }
-        public Builder withRole(String role){
-            this.role.role = role;
-            return this;
-        }
-        public Role build(){
-            return role;
-        }
     }
 }

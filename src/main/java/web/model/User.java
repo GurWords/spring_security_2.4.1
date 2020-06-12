@@ -4,13 +4,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
-public class User implements UserDetails{
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -21,15 +18,33 @@ public class User implements UserDetails{
     @Column(name = "password")
     String password;
 
-    @ManyToOne(optional = false,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "role")
-    private Role role;
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinTable(name = "UsersAndRole",
-//            joinColumns = @JoinColumn(name = "USER_ID"),
-//            inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-//    private List<Role> roleList = new ArrayList<>();
-    public User(){}
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "UserAndRole",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+    Set<Role> roleSet = new HashSet<>();
+
+    public User() {
+    }
+
+    public Set<Role> getRoleSet() {
+        return roleSet;
+    }
+
+    public void setRoleSet(Set<Role> roleSet) {
+        this.roleSet = roleSet;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return age == user.age &&
+                Objects.equals(name, user.name) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(roleSet, user.roleSet);
+    }
 
 
     public int getId() {
@@ -54,26 +69,8 @@ public class User implements UserDetails{
 
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return age == user.age &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(role, user.role);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, age, password, role);
-    }
-
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<Role> list_role = new ArrayList<>();
-        list_role.add(role);
-        return list_role;
+        return roleSet;
     }
 
     @Override
@@ -86,13 +83,6 @@ public class User implements UserDetails{
         return name;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -119,34 +109,39 @@ public class User implements UserDetails{
         this.password = password;
     }
 
-    public static class Builder{
+    public static class Builder {
         User user;
-        public Builder(){
+
+        public Builder() {
             user = new User();
         }
 
-        public Builder withId(int id){
+        public Builder withId(int id) {
             user.id = id;
             return this;
         }
-        public Builder withName(String name){
+
+        public Builder withName(String name) {
             user.name = name;
             return this;
         }
-        public Builder withAge(int age){
+
+        public Builder withAge(int age) {
             user.age = age;
             return this;
         }
-        public Builder withPassword(String passwrod){
-            user.password = passwrod;
-            return this;
-        }
-        public Builder withRole(Role role){
-            user.role = role;
+
+        public Builder withPassword(String password) {
+            user.password = password;
             return this;
         }
 
-        public User build(){
+        public Builder withRole(Role role) {
+            user.roleSet.add(role);
+            return this;
+        }
+
+        public User build() {
             return user;
         }
     }
